@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Repositories.Abstraction;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -47,9 +48,11 @@ namespace API.Repositories.Implementation
             return await _context.Users.Include(user => user.Photos).SingleOrDefaultAsync(user => user.UserName == name);
         }
 
-        public async Task<IEnumerable<MembersDto>> GetMembersAsync()
+        public async Task<PagedList<MembersDto>> GetMembersAsync(UserParams userParams)
         {
-            return await _context.Users.ProjectTo<MembersDto>(_mapper.ConfigurationProvider).ToListAsync();
+            var query = _context.Users.ProjectTo<MembersDto>(_mapper.ConfigurationProvider);
+
+            return await PagedList<MembersDto>.GetPagedList(query, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<MembersDto> GetMemberByUsernameAsync(string username)

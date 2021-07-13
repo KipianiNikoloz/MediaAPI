@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 
 namespace API.Repositories.Abstraction
 {
@@ -13,7 +14,7 @@ namespace API.Repositories.Abstraction
         Task<IEnumerable<AppUser>> GetUsersAsync();
         Task<AppUser> GetUserByIdAsync(int id);
         Task<AppUser> GetUserByNameAsync(string name);
-        Task<IEnumerable<MembersDto>> GetMembersAsync();
+        Task<PagedList<MembersDto>> GetMembersAsync(UserParams userParams);
         Task<MembersDto> GetMemberByUsernameAsync(string username);
     }
 }
