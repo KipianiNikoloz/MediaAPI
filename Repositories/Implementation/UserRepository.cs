@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
@@ -50,9 +51,19 @@ namespace API.Repositories.Implementation
 
         public async Task<PagedList<MembersDto>> GetMembersAsync(UserParams userParams)
         {
-            var query = _context.Users.ProjectTo<MembersDto>(_mapper.ConfigurationProvider);
+            var query = _context.Users.AsQueryable();
 
-            return await PagedList<MembersDto>.GetPagedList(query, userParams.PageNumber, userParams.PageSize);
+            query = query.Where(user => user.UserName != userParams.CurrentUsername);
+            query = query.Where(user => user.Gender == userParams.Gender);
+
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+
+            query = query.Where(user => user.DateOfBirth >= minDob && user.DateOfBirth <= maxDob);
+
+            return await PagedList<MembersDto>.GetPagedList(query.
+                    ProjectTo<MembersDto>(_mapper.ConfigurationProvider).AsNoTracking(), 
+                    userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<MembersDto> GetMemberByUsernameAsync(string username)
