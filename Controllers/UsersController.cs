@@ -38,8 +38,7 @@ namespace API.Controllers
             var user = await _userRepository.GetUserByNameAsync(User.GetUsername());
 
             userParams.CurrentUsername = user.UserName;
-            userParams.Gender = user.Gender == "male" ? "female" : "male";
-            
+
             var users = await _userRepository.GetMembersAsync(userParams);
 
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalPages, users.TotalCount);
