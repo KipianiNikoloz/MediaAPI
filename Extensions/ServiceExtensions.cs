@@ -22,14 +22,16 @@ namespace API.Extensions
             });
 
             services.AddScoped<LogUserActivity>();
-            
-            services.AddScoped<ITokenService, TokenService>();
 
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<ILikesRepository, LikesRepository>();
+
+            services.AddScoped<IMessageRepository, MessageRepository>();
             
             services.AddScoped<IPhotoUpload, PhotoUpload>();
+            
+            services.AddScoped<ITokenService, TokenService>();
             
             services.AddAutoMapper(typeof(AutoMapperProfiles));
 
