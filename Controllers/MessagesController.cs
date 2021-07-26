@@ -8,10 +8,12 @@ using API.Extensions;
 using API.Helpers;
 using API.Repositories.Abstraction;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize]
     public class MessagesController: BaseController
     {
         private readonly IUserRepository _userRepository;

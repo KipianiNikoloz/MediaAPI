@@ -1,9 +1,10 @@
-﻿using API.Entities;
+﻿using System.Threading.Tasks;
+using API.Entities;
 
 namespace API.Abstraction
 {
     public interface ITokenService
     {
-        public string CreateToken(AppUser user);
+        public Task<string> CreateToken(AppUser user);
     }
 }
