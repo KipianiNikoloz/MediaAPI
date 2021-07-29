@@ -7,6 +7,7 @@ using API.Entities;
 using API.Extensions;
 using API.Helpers;
 using API.Repositories.Abstraction;
+using API.UnitOfWorks.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,21 +16,19 @@ namespace API.Controllers
     [Authorize]
     public class LikesController: BaseController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILikesRepository _likesRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LikesController(IUserRepository userRepository, ILikesRepository likesRepository)
+        public LikesController(IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
-            _likesRepository = likesRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost("{username}")]
         public async Task<ActionResult> LikeUser(string username)
         {
             var sourceUserId = User.GetIdentifier();
-            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
-            var likedUser = await _userRepository.GetUserByNameAsync(username);
+            var sourceUser = await _unitOfWork.LikesRepository.GetUserWithLikes(sourceUserId);
+            var likedUser = await _unitOfWork.UserRepository.GetUserByNameAsync(username);
             
             if (sourceUser == null || likedUser == null) return NotFound();
 
@@ -41,16 +40,16 @@ namespace API.Controllers
                 LikedUserId = likedUser.Id
             };
 
-            if (await _likesRepository.GetUserLike(sourceUserId, likedUser.Id) != null)
+            if (await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id) != null)
             {
-                sourceUser.LikedUsers.Remove(await _likesRepository.GetUserLike(sourceUserId, likedUser.Id));
+                sourceUser.LikedUsers.Remove(await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id));
 
-                if (await _userRepository.SaveAllAsync()) return Ok();
+                if (await _unitOfWork.Complete()) return Ok();
             }
 
             sourceUser.LikedUsers.Add(like);
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest();
         }
@@ -59,7 +58,7 @@ namespace API.Controllers
         public async Task<IEnumerable<LikeDto>> GetUserLikes([FromQuery] LikesParams likesParams)
         {
             likesParams.UserId = User.GetIdentifier();
-            var userLikes = await _likesRepository.GetUserLikes(likesParams);
+            var userLikes = await _unitOfWork.LikesRepository.GetUserLikes(likesParams);
             
             Response.AddPaginationHeader(userLikes.CurrentPage, userLikes.PageSize, userLikes.TotalPages, userLikes.TotalCount);
 

@@ -1,7 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Controllers.Base;
+using API.Data;
+using API.DTOs;
 using API.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -57,13 +62,6 @@ namespace API.Controllers
             if (!result.Succeeded) return BadRequest("Failed to remove user from roles");
 
             return Ok(await _userManager.GetRolesAsync(user));
-        }
-        
-        [Authorize(Policy = "ModeratePhotoRole")]
-        [HttpGet("photos-to-moderation")]
-        public ActionResult GetPhotoModeration()
-        {
-            return Ok("Only moderators can see this");
         }
     }
 }

@@ -2,8 +2,9 @@
 using API.Data;
 using API.Helpers;
 using API.Implementation;
-using API.Repositories.Abstraction;
-using API.Repositories.Implementation;
+using API.SignalR;
+using API.UnitOfWorks.Abstraction;
+using API.UnitOfWorks.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,14 +22,12 @@ namespace API.Extensions
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddSingleton<PresenceTracker>();
+            
             services.AddScoped<LogUserActivity>();
 
-            services.AddScoped<IUserRepository, UserRepository>();
-
-            services.AddScoped<ILikesRepository, LikesRepository>();
-
-            services.AddScoped<IMessageRepository, MessageRepository>();
-            
             services.AddScoped<IPhotoUpload, PhotoUpload>();
             
             services.AddScoped<ITokenService, TokenService>();
