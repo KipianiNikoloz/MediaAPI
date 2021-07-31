@@ -38,6 +38,8 @@ namespace API.Controllers
             
             var user = _mapper.Map<AppUser>(registerDto);
 
+            user.UserName = user.UserName.ToLower();
+
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded) return BadRequest("An error occured");
 
