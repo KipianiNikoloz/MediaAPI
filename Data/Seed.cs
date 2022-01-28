@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using API.Entities;
+using API.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,7 @@ namespace API.Data
             foreach (var user in users)
             {
                 user.UserName = user.UserName.ToLower();
+                user.DateOfBirth = user.DateOfBirth.SetKindUtc();
 
                 await userManager.CreateAsync(user, "Pa$$w0rd");
                 await userManager.AddToRoleAsync(user, "Member");
@@ -42,6 +44,10 @@ namespace API.Data
             {
                 UserName = "admin"
             };
+
+            admin.DateOfBirth = admin.DateOfBirth.SetKindUtc();
+            admin.Created = admin.Created.SetKindUtc();
+            admin.LastActive = admin.LastActive.SetKindUtc();
 
             await userManager.CreateAsync(admin, "Pa$$w0rd");
             await userManager.AddToRolesAsync(admin, new[] {"Admin", "Moderator"});

@@ -20,6 +20,7 @@ namespace API.Helpers
 
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(id);
             user.LastActive = DateTime.UtcNow;
+            user.LastActive = user.LastActive.SetKindUtc();
             await unitOfWork.Complete();
         }
     }

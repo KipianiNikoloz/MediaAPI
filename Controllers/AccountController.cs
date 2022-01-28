@@ -7,6 +7,7 @@ using API.Controllers.Base;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,12 @@ namespace API.Controllers
             var user = _mapper.Map<AppUser>(registerDto);
 
             user.UserName = user.UserName.ToLower();
+
+            user.DateOfBirth = user.DateOfBirth.SetKindUtc();
+
+            user.Created = user.Created.SetKindUtc();
+
+            user.LastActive = user.LastActive.SetKindUtc();
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded) return BadRequest("An error occured");

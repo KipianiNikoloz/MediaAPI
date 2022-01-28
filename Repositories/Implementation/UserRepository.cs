@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Helpers;
 using API.Repositories.Abstraction;
 using AutoMapper;
@@ -51,8 +52,8 @@ namespace API.Repositories.Implementation
             query = query.Where(user => user.UserName != userParams.CurrentUsername);
             query = query.Where(user => user.Gender == userParams.Gender);
 
-            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
-            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1).SetKindUtc();
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge).SetKindUtc();
 
             query = query.Where(user => user.DateOfBirth >= minDob && user.DateOfBirth <= maxDob);
 

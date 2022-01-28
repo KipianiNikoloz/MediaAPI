@@ -80,9 +80,12 @@ namespace API.SignalR
 
             var group = await _unitOfWork.MessageRepository.GetMessageGroup(groupName);
 
+            message.MessageSent = message.MessageSent.SetKindUtc();
+            
             if (group.Connections.Any(connection => connection.UserName == recipient.UserName))
             {
                 message.MessageRead = DateTime.UtcNow;
+                message.MessageRead = message.MessageRead.SetKindUtc();
             }
             else
             {
